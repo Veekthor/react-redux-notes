@@ -1,57 +1,62 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component, useState } from 'react';
+import { connect, useDispatch } from 'react-redux';
 import { addNote } from '../redux/actions/actions';
-class NotesForm extends Component {
-  constructor(props) {
-    super(props);
 
-    this.state = {
-      title: '',
-      content: '',
-    };
-  }
+const NotesForm = () => {
+  const [values, setValues] = useState({
+    title: '',
+    content: '',
+  });
 
-  handleChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
+  const dispatch = useDispatch();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setValues(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  handleSubmission = (e) => {
+  const handleSubmission = (e) => {
     e.preventDefault();
 
-    let { title, content } = this.state;
-    this.props.addNote(title, content);
+    let { title, content } = values;
+    dispatch(addNote(title, content));
 
-    this.setState({ title: '', content: '' });
+    setValues(prev => ({
+      ...prev,
+      title: '',
+      content: ''
+    }));
   };
 
-  render() {
-    return (
-      <React.Fragment>
-        <h3>Add a Note</h3>
 
-        <form onSubmit={this.handleSubmission}>
-          Title: <br />
-          <input
-            type="text"
-            name="title"
-            value={this.state.title}
-            onChange={this.handleChange}
-          />
-          <br />
-          Content: <br />
-          <textarea
-            name="content"
-            value={this.state.content}
-            onChange={this.handleChange}
-          ></textarea>
-          <br />
-          <button type="submit">Add Note</button>
-        </form>
-      </React.Fragment>
-    );
-  }
+  return (
+    <React.Fragment>
+      <h3>Add a Note</h3>
+
+      <form onSubmit={handleSubmission}>
+        Title: <br />
+        <input
+          type="text"
+          name="title"
+          value={values.title}
+          onChange={handleChange}
+        />
+        <br />
+        Content: <br />
+        <textarea
+          name="content"
+          value={values.content}
+          onChange={handleChange}
+        ></textarea>
+        <br />
+        <button type="submit">Add Note</button>
+      </form>
+    </React.Fragment>
+  );
+
 }
 
-export default connect(null, {
-  addNote: addNote,
-})(NotesForm);
+export default NotesForm;
